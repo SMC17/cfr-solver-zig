@@ -178,3 +178,9 @@ test "Solver type compiles with formal bound" {
     const eps = s.currentEpsilonBound();
     try std.testing.expect(eps <= 2.0 / @sqrt(1000.0) + 1e-9);
 }
+
+pub const kuhn = @import("kuhn.zig");
+
+test {
+    _ = kuhn;
+}
