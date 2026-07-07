@@ -1,0 +1,61 @@
+{
+  "version": 3,
+  "source": "aristotle-toolkit (subset)",
+  "keys": {
+    "cfr_convergence_rate": {
+      "proved": true,
+      "axiom_closure": "clean",
+      "file": "3D_Poker_Solver_Research_Im__a52066c0/output-final_aristotle/RequestProject/GameTheory/CFR.lean"
+    },
+    "cfr_plus_potential": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "aristotle-toolkit"
+    },
+    "mccfr_unbiased": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "aristotle-toolkit"
+    },
+    "akq_exploitability_zero": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "3D_Poker_Solver_Research_Im__a52066c0/output-final_aristotle/RequestProject/Poker/AKQ.lean"
+    },
+    "kuhnT1_value": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "3D_Poker_Solver_Research_Im__a52066c0/output-final_aristotle/RequestProject/Poker/KuhnTwoSided.lean"
+    },
+    "kuhnT1_certified": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "3D_Poker_Solver_Research_Im__a52066c0/output-final_aristotle/RequestProject/Poker/KuhnTwoSided.lean"
+    },
+    "kuhnT1_exploit_zero": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "3D_Poker_Solver_Research_Im__a52066c0/output-final_aristotle/RequestProject/Poker/KuhnTwoSided.lean"
+    },
+    "minimax_theorem": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "aristotle-toolkit"
+    },
+    "nash_exists_zerosum": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "aristotle-toolkit"
+    },
+    "cfr_exploitability_bound": {
+      "proved": true,
+      "axiom_closure": "clean",
+      "file": "3D_Poker_Solver_Research_Im__a52066c0/output-final_aristotle/RequestProject/GameTheory/CFRExploitabilityBound.lean"
+    },
+    "gto_guarantees_nash_payoff": {
+      "proved": true,
+      "axiom_closure": "native",
+      "file": "aristotle-toolkit"
+    }
+  }
+}
