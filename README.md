@@ -1,3 +1,5 @@
+> **STATUS — UNDER OATH (2026-07):** The exploitability bound is **not** currently enforced. `Solver.iterate()` only increments a counter (`src/main.zig:145`) and does not traverse a game, while `currentEpsilonBound()` reports `2U/√T`. Treat the "compile-time invariant" claim below as **unproven** until [issue #1](https://github.com/SMC17/cfr-solver-zig/issues/1) is closed.
+
 # cfr-solver-zig
 
 Counterfactual Regret Minimization in Zig, where the convergence bound is a compile-time invariant.
