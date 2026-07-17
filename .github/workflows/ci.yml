@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Zig ${{ matrix.zig-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zig-version: [0.14.0]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v1
+        with:
+          version: ${{ matrix.zig-version }}
+      - name: Build
+        run: zig build
+      - name: Test
+        run: zig build test --summary all
