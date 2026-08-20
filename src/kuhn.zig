@@ -31,7 +31,7 @@ const Infoset = struct {
         return s;
     }
 
-    fn average(self: *const Infoset) [2]f64 {
+    pub fn average(self: *const Infoset) [2]f64 {
         const total = self.strategy_sum[0] + self.strategy_sum[1];
         if (total > 0)
             return .{ self.strategy_sum[0] / total, self.strategy_sum[1] / total };

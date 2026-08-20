@@ -1,4 +1,7 @@
-> **STATUS — UNDER OATH (2026-07):** The exploitability bound is **not** currently enforced. `Solver.iterate()` only increments a counter (`src/main.zig:145`) and does not traverse a game, while `currentEpsilonBound()` reports `2U/√T`. Treat the "compile-time invariant" claim below as **unproven** until [issue #1](https://github.com/SMC17/cfr-solver-zig/issues/1) is closed.
+> **STATUS (2026-08-20):** Issue #1/#3 landed: `Solver.iterate(n)` calls
+> `kuhn.Trainer.train(n)` (Kuhn tree only) and then increments `iterations`.
+> It is not a general-game CFR engine. Gate: `zig build test --summary all`
+> → 7/7 on Zig 0.16.0. `currentEpsilonBound()` is still `2U/√T` algebra.
 
 # cfr-solver-zig
 
