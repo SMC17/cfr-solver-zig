@@ -1,4 +1,5 @@
-//! Kuhn poker CFR+ — converges to the Lean-certified game value.
+//! Kuhn poker CFR+ prototype. Historical external proof references follow;
+//! this package does not replay their Lean proofs.
 //!
 //! The formal anchor (aristotle-toolkit, Poker_KuhnTwoSided.lean, project a52066c0):
 //!   kuhnT1_value        : valueQ eqP1Q kuhnT1 = -1/18   (native_decide, exact ℚ)
@@ -122,10 +123,10 @@ pub const Trainer = struct {
     }
 };
 
-/// The kernel-certified Kuhn value for Player 1 (kuhnT1_value, exact -1/18).
+/// Historical name for the known Kuhn reference value; not a fresh kernel result.
 pub const certified_value_p1: f64 = -1.0 / 18.0;
 
-test "CFR converges to the Lean-certified Kuhn value -1/18" {
+test "CFR trajectory approaches the known Kuhn reference value" {
     _ = gate.Gate(.cfr_convergence_rate){};
     var t = Trainer{};
     const v = t.train(20_000);
@@ -144,10 +145,10 @@ test "average strategy properties: bluff ratio alpha in [0,1/3], K always calls"
     try std.testing.expect(k_facing_bet[BET] > 0.97);
 }
 
-test "manifest cross-check: kuhnT1_value proved with native closure" {
+test "optional stored proof-manifest metadata" {
     const io = std.testing.io;
     const allocator = std.testing.allocator;
-    const path = "/home/user/aristotle-pipeline/signals/proof_manifest_v3.json";
+    const path = "proof_manifest.json";
     const bytes = std.Io.Dir.cwd().readFileAlloc(io, path, allocator, .unlimited) catch
         return error.SkipZigTest;
     defer allocator.free(bytes);

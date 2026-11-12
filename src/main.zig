@@ -1,8 +1,5 @@
-//! cfr-solver-zig — Counterfactual Regret Minimization with formally-verified convergence bounds.
-//!
-//! The cfr_convergence_rate gate ensures: ε ≤ 2U/√T
-//! You cannot compile this solver without a Lean 4 proof of CFR convergence.
-//! The proof_manifest.json at root must have cfr_convergence_rate: true.
+//! cfr-solver-zig — a bounded Kuhn-game research prototype.
+//! Claim gates below are catalog assertions, not a Lean-kernel replay.
 
 const std = @import("std");
 
@@ -11,7 +8,7 @@ const std = @import("std");
 // (will become a proper dependency once published to pkg.ziglang.org)
 // --------------------------------------------------------------------------
 
-pub const ProofStatus = enum { proven, unproven, refuted };
+pub const ProofStatus = enum { asserted, proven, unproven, refuted };
 
 pub const Claim = enum {
     cfr_convergence_rate,
@@ -35,13 +32,14 @@ fn claimStatus(c: Claim) ProofStatus {
         .akq_exploitability_zero, .hunl_push_fold_nash, .cfr_exploitability_bound,
         .minimax_theorem, .nash_exists_zerosum, .kuhn_poker_value,
         .gto_guarantees_nash_payoff, .range_advantage_ev, .icm_concavity,
-        .gamblers_ruin => .proven,
+        .gamblers_ruin => .asserted,
     };
 }
 
 pub fn Gate(comptime claim: Claim) type {
     comptime {
         return switch (claimStatus(claim)) {
+            .asserted => struct { pub const proof_status = ProofStatus.asserted; },
             .proven => struct { pub const proof_status = ProofStatus.proven; },
             .unproven => @compileError("Gate: " ++ @tagName(claim) ++ " not proven"),
             .refuted => @compileError("Gate: " ++ @tagName(claim) ++ " FORMALLY REFUTED"),
@@ -104,8 +102,8 @@ pub fn updateRegretCFRPlus(
     }
 }
 
-/// Epsilon bound from the formal proof: ε ≤ 2U / √T.
-/// Gate: cfr_convergence_rate — this IS the convergence theorem, not a heuristic.
+/// Evaluate the algebraic expression 2U/sqrt(T).
+/// This does not measure exploitability or verify that theorem assumptions hold.
 pub fn exploitabilityBound(
     comptime _: Gate(.cfr_convergence_rate),
     utility_bound: f64,
@@ -114,11 +112,9 @@ pub fn exploitabilityBound(
     return 2.0 * utility_bound / @sqrt(@as(f64, @floatFromInt(iterations)));
 }
 
-/// Run CFR for a game tree (simplified AKQ game).
-/// Returns exploitability ≤ the formal bound after T iterations.
+/// Wrapper around the specific Kuhn trainer; not a general-game solver.
 pub fn Solver(comptime utility_bound: f64) type {
-    // This assertion is the formal bound — gated by cfr_convergence_rate.
-    // It becomes part of the Solver type's specification.
+    // Preserve the legacy gate API while reporting its actual asserted status.
     const _convergence_gate = Gate(.cfr_convergence_rate){};
     _ = _convergence_gate;
 
@@ -126,6 +122,7 @@ pub fn Solver(comptime utility_bound: f64) type {
         isets: std.AutoHashMap(u64, InformationSet),
         iterations: usize = 0,
         allocator: std.mem.Allocator,
+        kuhn_trainer: kuhn.Trainer = .{},
 
         const Self = @This();
 
@@ -137,21 +134,17 @@ pub fn Solver(comptime utility_bound: f64) type {
             self.isets.deinit();
         }
 
-        /// Epsilon bound from the formal proof: ε ≤ 2U / √T.
-        /// Gate: cfr_convergence_rate — this IS the convergence theorem, not a heuristic.
+        /// Algebraic expression only; use the separate finite-game best-response check.
         pub fn currentEpsilonBound(self: *const Self) f64 {
             if (self.iterations == 0) return utility_bound * 2.0;
             return exploitabilityBound(.{}, utility_bound, self.iterations);
         }
 
-        /// Run `n` real CFR iterations on the Kuhn poker kernel (kuhn.Trainer),
-        /// which actually traverses the game tree and converges to the
-        /// Lean-certified value. This is not a no-op counter: each iteration
-        /// performs genuine regret/strategy updates, so `currentEpsilonBound()`
-        /// reflects a bound that corresponds to real computation.
+        /// Continue the same Kuhn trainer across calls. The average policy is
+        /// retained in kuhn_trainer; no general-game exploitability is asserted.
         pub fn iterate(self: *Self, n: usize) !void {
-            var trainer = kuhn.Trainer{};
-            _ = trainer.train(n);
+            if (n == 0) return;
+            _ = self.kuhn_trainer.train(n);
             self.iterations += n;
         }
     };
@@ -175,13 +168,32 @@ test "CFR+ regret update stays non-negative" {
     }
 }
 
-test "Solver type compiles with formal bound" {
+test "Solver evaluates its declared algebraic expression" {
     const MySolver = Solver(1.0);
     var s = MySolver.init(std.testing.allocator);
     defer s.deinit();
     try s.iterate(1000);
     const eps = s.currentEpsilonBound();
     try std.testing.expect(eps <= 2.0 / @sqrt(1000.0) + 1e-9);
+}
+
+test "claim gates report assertions rather than kernel verification" {
+    try std.testing.expectEqual(ProofStatus.asserted, Gate(.cfr_convergence_rate).proof_status);
+}
+
+test "segmented training retains the same policy as uninterrupted training" {
+    var segmented = Solver(2.0).init(std.testing.allocator);
+    defer segmented.deinit();
+    var whole = kuhn.Trainer{};
+    _ = whole.train(1000);
+    try segmented.iterate(400);
+    try segmented.iterate(600);
+    try segmented.iterate(0);
+    try std.testing.expectEqual(@as(usize, 1000), segmented.iterations);
+    for (whole.isets, segmented.kuhn_trainer.isets) |expected, actual| {
+        try std.testing.expectEqualSlices(f64, &expected.regret_sum, &actual.regret_sum);
+        try std.testing.expectEqualSlices(f64, &expected.strategy_sum, &actual.strategy_sum);
+    }
 }
 
 pub const kuhn = @import("kuhn.zig");
