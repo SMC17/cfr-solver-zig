@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "project": "cfr-solver-zig",
+  "visibility": "private",
+  "systems": [
+    "Darwin",
+    "Linux"
+  ],
+  "required_files": [
+    "README.md",
+    "LICENSE"
+  ],
+  "task": "Train a fixed Kuhn game and independently enumerate best responses to its average policy.",
+  "steps": [
+    {
+      "name": "unit tests",
+      "argv": [
+        "zig",
+        "build",
+        "test",
+        "-Doptimize=ReleaseSafe",
+        "--summary",
+        "all"
+      ],
+      "minimum_tests": 8
+    },
+    {
+      "name": "install fixture binary",
+      "argv": [
+        "zig",
+        "build",
+        "-Doptimize=ReleaseSafe"
+      ]
+    },
+    {
+      "name": "independent finite-game reference",
+      "argv": [
+        "python3",
+        "scripts/verify_kuhn.py"
+      ],
+      "contains": "\"status\": \"PASS\""
+    }
+  ],
+  "bundle_paths": [
+    "zig-out/bin/kuhn-task"
+  ],
+  "limitations": [
+    "Three-card ante-one/bet-one Kuhn only; no general-game or real-money performance claim.",
+    "Claim gates report assertions, not Lean verification. The optional local manifest-metadata test may skip; no kernel replay is claimed.",
+    "Measured exploitability is half the sum of the two finite-game best-response gains; algebraic bound APIs are separate.",
+    "Private source/package; no visibility flip is performed."
+  ]
+}

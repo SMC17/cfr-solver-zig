@@ -1,0 +1,31 @@
+name: Reproduce a self-serve task failure
+description: Bring the artifact, command and observed result.
+title: "[task] "
+body:
+  - type: markdown
+    attributes:
+      value: "Include only a minimal reproducible fixture. Leave out credentials, private inputs and workstation state."
+  - type: input
+    id: revision
+    attributes:
+      label: Source commit or pack checksum
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system, architecture and toolchain
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command and minimal input
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected result, actual result and exit status
+    validations:
+      required: true

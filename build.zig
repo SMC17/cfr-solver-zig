@@ -15,6 +15,15 @@ pub fn build(b: *std.Build) void {
     const test_step = b.step("test", "Run cfr-solver-zig tests");
     test_step.dependOn(&run_tests.step);
 
+    const task_mod = b.createModule(.{
+        .root_source_file = b.path("examples/kuhn_task.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    task_mod.addImport("cfr", tests.root_module);
+    const task = b.addExecutable(.{ .name = "kuhn-task", .root_module = task_mod });
+    b.installArtifact(task);
+
     const bench_exe = b.addExecutable(.{
         .name = "cfr-bench",
         .root_module = b.createModule(.{
