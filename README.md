@@ -55,3 +55,7 @@ The shared recipe retains committed source, executable, command logs, exact
 revision and checksums. Push/PR/manual/monthly workflow configuration and an
 intentional preview-tag gate reuse the existing maintenance path. Private
 visibility is preserved. Hosted configuration alone is not a passing run.
+
+## Unified C ABI, Python Wheel & WASM
+
+Core primitives from this repository are also cross-pollinated into **[SMC17/zinging (`zig-substrate`)](https://github.com/SMC17/zinging)** with C11 ABI bindings (`199` symbols), standalone Python wheels, JSON-RPC daemon (`substrate serve`), and `wasm32` builds.
