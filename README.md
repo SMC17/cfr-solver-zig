@@ -1,5 +1,7 @@
 # cfr-solver-zig
 
+**[Status](STATUS.md) · [Roadmap](ROADMAP.md) · [Contributing](CONTRIBUTING.md) · [Issues](https://github.com/SMC17/cfr-solver-zig/issues) · [Public roadmap](https://github.com/users/SMC17/projects/16)**
+
 A private, Apache-2.0 research prototype for a fixed three-card Kuhn game.
 The trainer enumerates all six deals. It is not a general extensive-game solver.
 
